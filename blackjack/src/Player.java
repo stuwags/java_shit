@@ -14,6 +14,15 @@ public class Player
 	public void gambleReturns(float bet)
 	{
 		money = money + bet;
+		if (bet < 0)
+			System.out.println("You lost $" + bet + " and now have $" + returnMoney() + 
+		" after incorporating your bet");
+		if (bet > 0)
+			System.out.println("You gained $" + bet + " and now have $" + returnMoney() + 
+		" after incorporating your bet");
+		else
+			System.out.println("You gained $" + bet + " and now have $" + returnMoney() + 
+			" after incorporating your bet. This is because you pushed!");
 	}
 	
 	public float returnMoney()

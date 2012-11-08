@@ -2,53 +2,22 @@ import java.util.Scanner;
 
 public class Game 
 {
-	Deck deck; Player p1; Dealer d1; int dh1_score; int ph1_score; int ph2_score; float bet; 
+	Deck deck; Player p1; Dealer d1; int dh1_score; int ph1_score; int ph2_score; float bet; int again;
 	float starting_money; boolean legit_value;
     Scanner input = new Scanner(System.in);
     
 	public Game()
 	{
 		startDaGame();
-    	
-		int again = 1;
+		again = 1;
 		while (again == 1)
 		{
-			placeYourBet();
-			dealPlayerAndDealer();
-			if (d1.returnDealerHand().getPoints() == 21)
-			{
-				if (p1.getHand(1).getPoints() == 21)
-				{
-					System.out.println("Both player and dealer got blackjack and push!");
-					bet = 0;
-				}
-				else
-				{
-					System.out.println("Dealer has blackjack and wins");
-					bet = bet * -1;
-				}
-			}
-			else
-			{
-				printHiddenHands();
-		    	doubleDown();	
-		    	playerHitLoop();
-		    	dealerHitLoop();
-		    	System.out.println("The Dealer got " + d1.getHand().getPoints() + " points");
-		    	System.out.println("The Player got " + p1.getHand(1).getPoints() + " points");
-		    	winLossLogic();
-			}
+			playDaGame();
 			p1.gambleReturns(bet);
-			System.out.println("You gained/lost $" + bet + " and now have $" + p1.returnMoney() + 
-					" after incorporating adding/minusing your bet");
-			System.out.println("Play another hand 1 for yes and any other int for no?");
+			System.out.println("Play another hand - 1 for yes and any other int for no?");
 			again = input.nextInt();
 			if (again == 1)
-			{
-				p1.getHand(1).resetHand(); p1.getHand(2).resetHand(); d1.getHand().resetHand();
-				if (deck.getDeckLoc() > 40)
-					deck.shuffle();
-			}
+				resetAndShuffle();
 		}
 	}
 	
@@ -66,8 +35,7 @@ public class Game
 	{
 		System.out.print("The dealer's show card is the ");
 		d1.printHiddenHand();
-		//put in here the dealer if beating you and that you should hit
-		
+		System.out.println("***********************************************************");
 		System.out.print("Your hand includes: ");
 		p1.printHand(1);
 	}
@@ -84,14 +52,12 @@ public class Game
 	    	System.out.println("The total point score is " + p1.getHand(1).getPoints());
 	    	if (p1.getHand(1).getPoints() > 21)
 	    	{
-	    		System.out.println("You busted, sorry!");
-	    		System.out.println("Press any number to continue");
+	    		System.out.println("You busted, sorry!"); System.out.println("Press any number to continue");
 	    		int any = input.nextInt();
 	    	}
 	    	if (p1.getHand(1).getPoints() == 21)
 	    	{
-	    		System.out.println("Congrats you got 21!");
-	    		System.out.println("Press any number to continue");
+	    		System.out.println("Congrats you got 21!"); System.out.println("Press any number to continue");
 	    		int any = input.nextInt();
 	    		hit = 2;
 	    	}
@@ -129,14 +95,6 @@ public class Game
         }
         else
         {	
-        	if (ph1_score == 21)
-        	{
-        		if (p1.getHand(1).handSize() == 1 && d1.getHand().handSize() != 1)
-        		{
-        			System.out.println("Player has blackJack! Congrats!");
-        			bet = bet * 1.5f;
-        		}
-        	}
         	if (dh1_score == ph1_score)
         	{
         		System.out.println("It's a push!!!!");
@@ -145,9 +103,7 @@ public class Game
 	    	if (dh1_score > ph1_score)
 	    	{
 	    		if (dh1_score > 21)
-	    		{
 	    			System.out.println("Dealer busts, Player wins");
-	    		}
 	    		else
 	    		{
 	    			System.out.println("Dealer wins, Player loses");
@@ -162,12 +118,9 @@ public class Game
 	    			bet = bet * -1;
 	    		}
 	    		else
-	    		{
 	    			System.out.println("Player wins");
-	    		}
 	    	}
         }
-	}
 	
 	private void startDaGame()
 	{
@@ -176,6 +129,14 @@ public class Game
 		starting_money = input.nextFloat();
 		//add validations to the money size and remove commas	    
 		legit_value = false;
+		buyIn();
+		deck = new Deck();
+		p1 = new Player(starting_money); 
+		d1 = new Dealer(deck);
+	}
+	
+	private void buyIn()
+	{
 		while (legit_value == false)
 		{
 			if (starting_money % 10 != 0 || starting_money < 100 || starting_money > 100000)
@@ -191,9 +152,6 @@ public class Game
 			}
 	
 		}
-		deck = new Deck();
-		p1 = new Player(starting_money); 
-		d1 = new Dealer(deck);
 	}
 	
 	private void doubleDown()
@@ -212,6 +170,7 @@ public class Game
 	
 	private void placeYourBet()
 	{
+		System.out.println("You currently have $" + p1.returnMoney() + " of chips");
 		System.out.println("How much money do you want to bet on this hand? - enter 10.00 to" +
 		" 1000.00 in a multiple of 10");
 		bet = input.nextFloat();
@@ -230,5 +189,52 @@ public class Game
 				System.out.println("You have bet $" + bet + " of chips" + "\nGood Luck!");
 			}
 		}
+	}
+	
+	private void earlyBlackJackCheck()
+	{
+		if (d1.returnDealerHand().getPoints() == 21)
+		{
+			if (p1.getHand(1).getPoints() == 21)
+			{
+				System.out.println("Both player and dealer got blackjack and push!");
+				System.out.println("Dealer's hand is " + d1.returnDealerHand());
+				System.out.println("your hand is " + p1.getHand(1));
+				bet = 0;
+			}
+			else
+			{
+				System.out.println("Dealer has blackjack and wins");
+				System.out.println("Dealer's hand is " + d1.returnDealerHand());
+				System.out.println("your hand is " + p1.getHand(1));
+				bet = bet * -1;
+			}
+		}
+		if (p1.getHand(1).getPoints() == 21)
+		{
+			System.out.println("Player got BlackJack and Computer did not!");
+			bet = bet * 1.5f;
+		}
+	}
+	
+	private void playDaGame()
+	{
+		placeYourBet();
+		dealPlayerAndDealer();
+		earlyBlackJackCheck();
+		printHiddenHands();
+	    doubleDown();	
+	    playerHitLoop();
+	    dealerHitLoop();
+	    System.out.println("The Dealer got " + d1.getHand().getPoints() + " points");
+	    System.out.println("The Player got " + p1.getHand(1).getPoints() + " points");
+	    winLossLogic();
+	}
+	
+	private void resetAndShuffle()
+	{
+		p1.getHand(1).resetHand(); p1.getHand(2).resetHand(); d1.getHand().resetHand();
+		if (deck.getDeckLoc() > 40)
+			deck.shuffle();
 	}
 }

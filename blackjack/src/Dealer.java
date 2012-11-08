@@ -46,7 +46,6 @@ public class Dealer
 	public void printHiddenHand()
 	{
 		System.out.print(dh1.return2ndCard());
-		System.out.println("***********************************************************");
 	}
 	
 	public Hand returnDealerHand()

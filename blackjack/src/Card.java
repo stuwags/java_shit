@@ -24,6 +24,11 @@ public class Card
 		return points;
 	}
 	
+	public int getFaceNumber()
+	{
+		return face_number;
+	}
+	
 	public String toString()
 	{
 		return card_label[face_number-1] + " of " + card_suit[suit];

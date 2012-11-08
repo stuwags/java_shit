@@ -24,32 +24,40 @@ public class Hand
 	
 	public String toString()
 	{
-		String cards = "";
-		int points = 0;
+		String cards = ""; String ace = "";
 		for (int i = 0; i < hand_size; i++)
 		{
-			points += hand[i].getPoints();
-			cards += "The " + hand[i] + " worth " + hand[i].getPoints()
-			+ " points" + " | ";
+			if (hand[i].getFaceNumber() == 1)
+				ace = " or 11";
+			cards += "The " + hand[i] + " worth " + hand[i].getPoints() + 
+			ace + " points" + " | ";
+			ace = "";
 		}
-		return cards + "\n" + "The total point score is: " + points
+		return cards + "\n" + "The total point score is: " + getPoints()
 		+ " points" + "\n";
 	}
 	
 	public int getPoints()
 	{
-		int points = 0;
+		int points = 0; boolean ace_present = false;
 		for (int i = 0; i < hand_size; i++)
 		{
+			if (hand[i].getFaceNumber() == 1)
+				ace_present = true;
 			points += hand[i].getPoints();
 		}
+		if (ace_present == true && points <= 11)
+			points = points + 10;
 		return points;
 	}
 	
 	public String return2ndCard()
 	{
-		String card = hand[1] + " worth " + hand[1].getPoints() +
-				" points" + "\n";
+		String ace = "";
+		if (hand[1].getFaceNumber() == 1)
+			ace = " or 11";
+		String card = hand[1] + " worth " + hand[1].getPoints() + 
+		ace + " points" + "\n";
 		return card;
 	}
 	
