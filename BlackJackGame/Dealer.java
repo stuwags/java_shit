@@ -1,8 +1,8 @@
 
 public class Dealer 
 {
-	Hand dh1;
-	Deck deck;
+	private Hand dh1;
+	private Deck deck;
 	
 	public Dealer(Deck deck)
 	{
@@ -39,8 +39,16 @@ public class Dealer
 	{
 		Card card = deck.deal();
 		dh1.addCard(card);
+		if (card.getFaceNumber() == 1)
+		{
+			System.out.println("Dealer hits and gets a " + card + 
+					" worth " + card.getPoints() + " of 11 points");
+		}
+		else
+		{
 		System.out.println("Dealer hits and gets a " + 
 				card + " worth " + card.getPoints() + " points");
+		}
 	}
 	
 	public void printHiddenHand()

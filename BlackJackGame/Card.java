@@ -4,10 +4,10 @@ public class Card
 	
 	private int suit; private int face_number; private int points;
 	
-	final String[] card_label = { "Ace", "Two", "Three", "Four", "Five",
+	private final String[] card_label = { "Ace", "Two", "Three", "Four", "Five",
 			"Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King" };
 	
-	final String[] card_suit = { "Diamonds", "Hearts", "Clubs", "Spades" };
+	private final String[] card_suit = { "Diamonds", "Hearts", "Clubs", "Spades" };
 	
 	public Card(int suit, int face_number)
 	{

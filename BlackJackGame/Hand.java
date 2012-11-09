@@ -3,7 +3,7 @@ public class Hand
 {
 	
 	//11 is max hand size in blackjack, because 4 aces and 4 twos and 3 threes make up 21
-	private Card[] hand; public int hand_size;
+	private Card[] hand; private int hand_size;
 	
 	public Hand()
 	{	 
@@ -15,6 +15,18 @@ public class Hand
 	{
 		hand = new Card[11];
 		hand_size = 0;
+	}
+	
+	public void devDealPlayer()
+	{
+		addCard(new Card(2, 1));
+		addCard(new Card(3, 1));
+	}
+	
+	public void devDealDealer()
+	{
+		addCard(new Card(1, 2));
+		addCard(new Card(3, 1));
 	}
 	
 	public void addCard(Card card)
@@ -33,7 +45,7 @@ public class Hand
 			ace + " points" + " | ";
 			ace = "";
 		}
-		return cards + "\n" + "The total point score is: " + getPoints()
+		return cards + "-- The total point score is: " + getPoints()
 		+ " points" + "\n";
 	}
 	
@@ -51,6 +63,33 @@ public class Hand
 		return points;
 	}
 	
+	public boolean blackJackCheck()
+	{
+		int points = 0; boolean ace_present = false;
+		for (int i = 0; i <= 1; i++)
+		{
+			if (hand[i].getFaceNumber() == 1)
+				ace_present = true;
+			points += hand[i].getPoints();
+		}
+		if (ace_present == true && points <= 11)
+			points = points + 10;
+		if (points == 21)
+		{
+			return true;
+		}
+		else
+			return false;
+	}
+	
+	public boolean splitCheck()
+	{
+		if (hand[0].getFaceNumber() == hand[1].getFaceNumber())
+			return true;
+		else
+			return false;
+	}
+	
 	public String return2ndCard()
 	{
 		String ace = "";
@@ -59,6 +98,14 @@ public class Hand
 		String card = hand[1] + " worth " + hand[1].getPoints() + 
 		ace + " points" + "\n";
 		return card;
+	}
+	
+	public Card split(Card replacement_card)
+	{
+		Card exit_card = hand[1];
+		hand[1] = replacement_card;
+		hand_size = 1;
+		return exit_card;
 	}
 	
 	public int handSize()

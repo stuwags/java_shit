@@ -2,7 +2,7 @@
 
 public class Deck 
 {
-	final int deck_size = 52;
+	final private int deck_size = 52;
 	final private Card[] deck = new Card[deck_size];
 	private int deck_loc;
 	
