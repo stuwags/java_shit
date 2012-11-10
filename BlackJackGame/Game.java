@@ -1,23 +1,33 @@
+/******************************
+*  Game.java
+*  written by Stuart Wagner
+
+********************************/
+
 import java.util.Scanner; 
 
 public class Game 
 {
+	//instance variables include deck, player and ealer, bets, 
+	//again value, starting money, legit value, and scanner
+	
 	private Deck deck; private Player p1; private Dealer d1;
 	private float bet; private float bet2; private int again;
 	private float starting_money; private boolean legit_value; 
     Scanner input = new Scanner(System.in);
     
+    //constructor runs a number of things all surrounding the game
 	public Game()
 	{
 		startTheGame();
 		again = 1;
 		while (again == 1)
 		{
-			playTheGame();
+			playTheGame();//all methods referring to playing
 			returnChipsToPlayer();
-			if (p1.returnMoney() == 0)
+			if (p1.returnMoney() == 0)//if you are out of chips
 			{
-				System.out.println("You are out of money and lose your hand. You may start a new game and buyin again!");
+				System.out.println("You are out of chips! You may start a new game and buyin again!");
 				again = 0;
 			}
 			else
@@ -30,7 +40,7 @@ public class Game
 		}
 	}
 	
-	private void returnChipsToPlayer()
+	private void returnChipsToPlayer() //returns score to player after adjusting for two hands if necessary
 	{
 		if (p1.numberOfHands() > 1)
 		{
@@ -44,6 +54,11 @@ public class Game
 		p1.gambleReturns(bet);
 	}
 	
+	//this is a special method with commented out developer tools. If you want to use
+	//these developer tools with the hand dev tools, uncomment them.
+	//They allow you to deal cards of your choice to the dealer and/or player
+	//this allowed me to create tests for cases such as blackjack for dealer or player
+	//or creating splits
 	private void dealPlayerAndDealer()
 	{
     	Card[] two_cards = d1.dealPlayerHand();
@@ -57,6 +72,7 @@ public class Game
 
 	}
 	
+	//This prints out the player hand with Dealer show card
 	private void printHiddenHands()
 	{
 		System.out.print("The dealer's show card is the ");
@@ -66,10 +82,12 @@ public class Game
 		p1.printHand(1);
 	}
 	
+	//This loop is to allow the player to hit when appropriate, and will run for as many
+	//iterations as there are hands
 	private void playerHitLoop(int game_iterations)
 	{
 		int hit = 0;
-		if (p1.getHand(game_iterations).getPoints() < 21 || d1.getHand().blackJackCheck() == false)
+		if (p1.getHand(game_iterations).getPoints() < 21 || d1.returnDealerHand().blackJackCheck() == false)
 			{
 			System.out.print("Do you want to hit? (1 for yes, 2 for no) for hand " + game_iterations+ "\n");
 			hit = input.nextInt();
@@ -97,12 +115,18 @@ public class Game
     	}
 	}
 	
+	//This loop is to allow the dealer to hit when appropriate
 	private void dealerHitLoop()
 	{
 		if (p1.numberOfHands() > 1 && p1.getHand(1).getPoints() > 21 
 				&& p1.getHand(2).getPoints() > 21)	
 		{
-				System.out.println("Dealer stays as player has busted in both hands");
+			System.out.println("Dealer stays as player has busted in both hands");
+		}
+		else if (p1.numberOfHands() > 1 && p1.getHand(1).blackJackCheck() == true 
+				&& p1.getHand(2).blackJackCheck() == true)
+		{
+			System.out.println("Dealer doesn't hit as player got double blackjack");
 		}
 		else if (p1.getHand(1).getPoints() > 21 && p1.numberOfHands() < 2)
     	{
@@ -116,12 +140,12 @@ public class Game
     	{
 			System.out.println("***********************************************************");
 	    	System.out.print("The Dealers current hand is: " + d1.returnDealerHand());
-		    while (d1.getHand().getPoints() < 17 )
+		    while (d1.returnDealerHand().getPoints() < 17 )
 		    {
 		    	System.out.println("***********************************************************");
 		    	d1.dealerHit();
-		    	System.out.println("The dealer's total point score is " + d1.getHand().getPoints() + " points");
-			   	if (d1.getHand().getPoints() > 21)
+		    	System.out.println("The dealer's total point score is " + d1.returnDealerHand().getPoints() + " points");
+			   	if (d1.returnDealerHand().getPoints() > 21)
 			   	{
 			   		System.out.println("Dealer busts!");
 			   	}
@@ -129,11 +153,13 @@ public class Game
     	}
 	}
 	
+	//This runs the winLossLogic after both players have hit. This does not account for early black jack, which is handled
+	//by another method
 	private void winLossLogic(int game_iteration)
 	{
 		System.out.print("*********************************************************");
 		System.out.print("\nResult: ");
-		int dh1_score = d1.getHand().getPoints(); int ph_score = p1.getHand(game_iteration).getPoints();
+		int dh1_score = d1.returnDealerHand().getPoints(); int ph_score = p1.getHand(game_iteration).getPoints();
 		String hand = "";
 		if (p1.numberOfHands() > 1)
 		{
@@ -166,6 +192,7 @@ public class Game
 	    }
 	}
 	
+	//this runs bet logic for each hand and amount
 	private void betLogic(int which_hand, float amount)
 	{
 		if (which_hand == 1)
@@ -174,6 +201,7 @@ public class Game
 			bet2 = bet2 * amount;
 	}
 	
+	//This starts the game by getting the buyin, and creating a deck, player, and dealer
 	private void startTheGame()
 	{
 		System.out.println("How much money do you want to buyin? - enter 100.00 to 100,000 in a" +
@@ -186,6 +214,7 @@ public class Game
 		d1 = new Dealer(deck);
 	}
 	
+	//This runs to get a legitimate value for buyin
 	private void buyIn()
 	{
 		while (legit_value == false)
@@ -204,10 +233,10 @@ public class Game
 	
 		}
 	}
-	
+	//This allows for doubling down
 	private boolean doubleDown()
 	{
-		int d1_score = d1.getHand().getPoints(); int p1_score = p1.getHand(1).getPoints();
+		int d1_score = d1.returnDealerHand().getPoints(); int p1_score = p1.getHand(1).getPoints();
 		if (p1.returnMoney() >= bet*2 && d1_score < 21 && p1_score < 21)
 			{
 				System.out.println("Do you want to double down? - 1 for yes and 2 for no. " +
@@ -230,19 +259,20 @@ public class Game
    		}
 	}
 	
+	//This creates the bet and provides validations for it
 	private void placeYourBet()
 	{
 		System.out.println("You currently have $" + p1.returnMoney() + " of chips");
 		System.out.println("How much money do you want to bet on this hand? - enter 10.00 to" +
-		" 1000.00 in a multiple of 10");
+		" 1000.00");
 		bet = input.nextFloat();
 		legit_value = false;
 		while (legit_value == false)
 		{
-			if (bet % 10 != 0 || bet < 10 || bet > 1000 || bet > p1.returnMoney())
+			if (bet < 10 || bet > 1000 || bet > p1.returnMoney())
 			{
 				System.out.println("Get it right Stupid: How much money do you want to bet on " + 
-						"this hand? - enter 10.00 to 1000.00 in a multiple of 10 - And don't " +
+						"this hand? - And don't " +
 						"bet more than you have chips");
 				bet = input.nextFloat();
 			}
@@ -254,6 +284,7 @@ public class Game
 		}
 	}
 	
+	//runs an early check for blackjack and manages bets based on that
 	private void earlyBlackJackCheck(int game_iterations)
 	{
 		d1.returnDealerHand().blackJackCheck();
@@ -279,6 +310,7 @@ public class Game
 		}
 	}
 	
+	//determines if a player can and decides to split their hand
 	private void splitCheck()
 	{
 		if (p1.getHand(1).splitCheck() == true && p1.returnMoney() >= bet * 2)
@@ -292,6 +324,7 @@ public class Game
 		}
 	}
 	
+	//This splits the hand and activities the appropriate methods to make split happen
 	private void split()
 	{
 		Card transfer_card = p1.getHand(1).split(d1.playerHit());
@@ -306,6 +339,7 @@ public class Game
 		System.out.println("Hand 2 => " + p1.getHand(2));
 	}
 	
+	//This runs all the methods for playing a game
 	private void playTheGame()
 	{
 		placeYourBet();
@@ -342,21 +376,21 @@ public class Game
 			}
 		}
 	}
-	
+	//resets and shuffles game
 	private void resetAndShuffle()
 	{
 		if (p1.numberOfHands() > 1)
 		{
 			p1.getHand(2).resetHand(); p1.resetNumberOfHands(); bet2 = 0;
 		}
-		p1.getHand(1).resetHand(); d1.getHand().resetHand();
+		p1.getHand(1).resetHand(); d1.returnDealerHand().resetHand();
 		if (deck.getDeckLoc() > 40)
 			deck.shuffle();
 	}
-	
+	//prints results for each hand
 	private void printTheResults()
 	{
-	    System.out.println("The Dealer got " + d1.getHand().getPoints() + " points");
+	    System.out.println("The Dealer got " + d1.returnDealerHand().getPoints() + " points");
 		String hand = "";
 		if (p1.numberOfHands() > 1)
 		{

@@ -1,4 +1,9 @@
-
+/******************************
+*  BlackJackTester.java
+*  written by Stuart Wagner
+*  
+*  Main Method
+********************************/
 import java.util.Scanner; 
 
 public class BlackJackTester {
